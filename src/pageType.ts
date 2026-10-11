@@ -87,22 +87,6 @@ export const FolderPage: QuartzPageTypePlugin<FolderPageOptions> = (opts) => {
         }
       }
 
-      // For existing index files without a meaningful title, use the folder display name
-      for (const [, file] of content) {
-        const slug = (file.data as { slug?: string } | undefined)?.slug;
-        if (!slug || !slug.endsWith("/index")) continue;
-
-        const frontmatter = (file.data as { frontmatter?: { title?: string } }).frontmatter;
-        if (!frontmatter || (frontmatter.title && frontmatter.title !== "index")) continue;
-
-        const folder = slug.slice(0, -"/index".length);
-        const slugSegment = folder.split("/").pop() ?? folder;
-        const folderName = folderDisplayNames.get(slugSegment) ?? slugSegment;
-        frontmatter.title = opts?.prefixFolders
-          ? `${i18n(locale).pages.folderContent.folder}: ${folderName}`
-          : folderName;
-      }
-
       const virtualPages: VirtualPage[] = [];
       for (const folder of folders) {
         if (foldersWithIndex.has(folder)) continue;
@@ -117,7 +101,8 @@ export const FolderPage: QuartzPageTypePlugin<FolderPageOptions> = (opts) => {
         virtualPages.push({
           slug,
           title,
-          data: {},
+          // Only generated pages get a listing; a folder's own markdown page renders as written
+          data: { folderListing: true },
         });
       }
 

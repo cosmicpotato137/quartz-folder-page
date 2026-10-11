@@ -157,6 +157,21 @@ export default ((opts?: Partial<FolderContentOptions>) => {
 
     if (!slug) return null;
 
+    const cssClasses =
+      ((fileData as { frontmatter?: { cssclasses?: string[] } } | undefined)?.frontmatter
+        ?.cssclasses as string[] | undefined) ?? [];
+    const hastRoot = tree as Root;
+
+    // A folder's own markdown page (index.md or a note named after the folder) replaces the
+    // folder page entirely: render it as a regular content page. Only generated pages list.
+    if ((fileData as { folderListing?: unknown } | undefined)?.folderListing !== true) {
+      return (
+        <article class={["popover-hint", ...cssClasses].join(" ")}>
+          <div class="markdown-preview-view markdown-rendered">{htmlToJsx(hastRoot)}</div>
+        </article>
+      );
+    }
+
     const trie = ctx?.trie;
     let allPagesInFolder: PageEntry[];
 
@@ -168,9 +183,6 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       allPagesInFolder = pagesFromAllFiles(allFiles ?? [], slug, options.showSubfolders);
     }
 
-    const cssClasses =
-      ((fileData as { frontmatter?: { cssclasses?: string[] } } | undefined)?.frontmatter
-        ?.cssclasses as string[] | undefined) ?? [];
     const classes = cssClasses.join(" ");
     const listProps = {
       ...props,
@@ -178,7 +190,6 @@ export default ((opts?: Partial<FolderContentOptions>) => {
       allFiles: allPagesInFolder,
     };
 
-    const hastRoot = tree as Root;
     const content =
       hastRoot.children.length === 0
         ? (fileData as { description?: unknown } | undefined)?.description

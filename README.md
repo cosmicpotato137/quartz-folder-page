@@ -1,6 +1,10 @@
 # @quartz-community/folder-page
 
-Renders folder index pages showing a listing of all pages within that folder. Automatically generates virtual index pages for folders that don't have one.
+Automatically generates a page listing the contents of every folder that doesn't have its own page.
+
+### Folders with their own page
+
+If a folder already has a markdown page, either `index.md` (or `_index.md`) or a page with the same name as the folder (the Obsidian "Folder Notes" convention, e.g. `notes/notes.md`), that page is used as the folder page as-is. Its content is rendered like any other page, with no folder listing, item count, or generated title. The options below only apply to generated folder pages.
 
 ## Installation
 
@@ -36,6 +40,19 @@ ExternalPlugin.FolderPage({
 | `showSubfolders`  | `boolean` | `undefined` | Whether to show subfolders in the listing.                                             |
 | `sort`            | `SortFn`  | `undefined` | A function to sort the pages in the folder.                                            |
 | `prefixFolders`   | `boolean` | `false`     | Whether to prefix generated folder page titles with "Folder: " (e.g. "Folder: notes"). |
+
+## Development
+
+To build locally:
+
+```bash
+npm install
+npm run build
+```
+
+The built `dist/` folder is committed so Quartz can use it as-is when installing the plugin from git, without
+installing dependencies or building. Run `npm run build` and commit `dist/` along with any source change; CI fails if
+they are out of sync.
 
 ## Documentation
 
